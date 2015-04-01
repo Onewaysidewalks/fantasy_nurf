@@ -1,0 +1,12 @@
+apply plugin: "java"
+
+repositories {
+  mavenLocal()
+  mavenCentral()
+}
+
+dependencies {
+  compile "org.projectlombok:lombok:1.16.2"
+  compile "com.hubspot.dropwizard:dropwizard-guice:0.8.0"
+  compile "io.dropwizard:dropwizard-core:0.8.0"
+}

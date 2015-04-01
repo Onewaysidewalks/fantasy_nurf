@@ -1,0 +1,8 @@
+rootProject.name="fantasy_nurf"
+include "api"
+include 'riot-api'
+
+include 'riot-api-stats-aggregator'
+
+include 'utilities'
+

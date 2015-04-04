@@ -1,0 +1,1 @@
+CREATE KEYSPACE raw_matches WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 3 };

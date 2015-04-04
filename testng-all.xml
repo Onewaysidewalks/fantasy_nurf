@@ -1,0 +1,38 @@
+
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="all">
+    <test name="units" parallel="classes">
+        <groups>
+            <run>
+                <exclude name="data" />
+                <exclude name="integration" />
+            </run>
+        </groups>
+        <packages>
+            <package name="ninja.onewaysidewalks.*" />
+        </packages>
+    </test>
+
+    <test name="data" parallel="false">
+        <groups>
+            <run>
+                <include name="data" />
+            </run>
+        </groups>
+        <packages>
+            <package name="ninja.onewaysidewalks.*" />
+        </packages>
+    </test>
+
+    <test name="int" parallel="false">
+        <groups>
+            <run>
+                <include name="integration" />
+            </run>
+        </groups>
+        <packages>
+            <package name="ninja.onewaysidewalks.*" />
+        </packages>
+    </test>
+</suite>

@@ -1,0 +1,18 @@
+apply plugin: 'java'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.projectlombok:lombok:1.16.2"
+    compile "org.glassfish.jersey.core:jersey-client:2.16"
+    compile "com.fasterxml.jackson.core:jackson-core:2.5.1"
+
+
+    testCompile ("org.testng:testng:6.8.7") {
+        exclude module: "junit"
+    }
+    testCompile "org.mockito:mockito-core:1.9.5"
+}

@@ -1,6 +1,5 @@
-package ninja.onewaysidewalks.riotapi.urf.matches.persistence;
+package ninja.onewaysidewalks.riotapi.urf.matches.ids.persistence;
 
-import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
@@ -11,39 +10,27 @@ import java.util.List;
 import static com.datastax.driver.core.querybuilder.QueryBuilder.eq;
 
 @Slf4j
-public class MatchIdPersistenceImpl implements ninja.onewaysidewalks.riotapi.urf.matches.persistence.MatchIdPersistence {
+public class MatchIdPersistenceImpl implements MatchIdPersistence {
 
-    private Cluster cluster;
-    private Session session;
-    private String keyspace;
+    private final Session session;
+    private static final String MATCH_ID_TABLE = "match_ids";
+    private static final String RAW_MATCHES_KEYSPACE = "raw_matches";
 
-    public MatchIdPersistenceImpl(String keyspace, String contactPoint, String username, String password) {
-        cluster = Cluster.builder()
-                .withCredentials(username, password)
-                .addContactPoint(contactPoint).build();
-        this.keyspace = keyspace;
+    public MatchIdPersistenceImpl(Session session) {
+        this.session = session;
     }
-
-    public void initialize() {
-        session = cluster.connect(keyspace);
-    }
-
-    public void tearDown() {
-        session.close();
-        cluster.close();
-    }
-
     @Override
     public void writeBucket(long timestamp, List<Long> matchIds) {
         session.execute(QueryBuilder
-                .insertInto("match_ids")
+                .insertInto(RAW_MATCHES_KEYSPACE, MATCH_ID_TABLE)
                 .value("time_bucket", timestamp)
                 .value("match_ids", matchIds));
     }
 
     @Override
     public boolean bucketExists(long timestamp) {
-        Row row = session.execute(QueryBuilder.select().from("match_ids").where(eq("time_bucket", timestamp))).one();
+        Row row = session.execute(QueryBuilder.select().from(RAW_MATCHES_KEYSPACE, MATCH_ID_TABLE)
+                .where(eq("time_bucket", timestamp))).one();
 
         if (row == null) {
             return false;

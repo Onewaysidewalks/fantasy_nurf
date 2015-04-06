@@ -1,0 +1,20 @@
+apply plugin: "java"
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    compile project(":utilities")
+
+    compile "com.rabbitmq:amqp-client:3.5.0"
+    compile "org.projectlombok:lombok:1.16.2"
+    compile "com.fasterxml.jackson.core:jackson-databind:2.5.1"
+    compile "io.dropwizard:dropwizard-logging:0.8.0"
+
+    testCompile ("org.testng:testng:6.8.7") {
+        exclude module: "junit"
+    }
+    testCompile "org.mockito:mockito-core:1.9.5"
+}

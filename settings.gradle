@@ -1,6 +1,2 @@
 rootProject.name="fantasy_nurf"
-include "api"
-include "riot-api-client"
-include "riot-api-aggregators"
-include "utilities"
-
+include "api", "riot-api-client", "riot-api-aggregators", "utilities", "messaging-client"

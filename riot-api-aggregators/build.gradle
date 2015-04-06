@@ -8,6 +8,8 @@ repositories {
 dependencies {
     compile project(":utilities")
     compile project(":riot-api-client")
+    compile project(":messaging-client")
+
     compile "joda-time:joda-time:2.7"
     compile "com.datastax.cassandra:cassandra-driver-core:2.1.5"
     compile "io.dropwizard:dropwizard-logging:0.8.0"

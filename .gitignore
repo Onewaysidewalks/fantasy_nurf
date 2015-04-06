@@ -33,3 +33,6 @@ results/
 
 # Java Dump
 *.hprof
+
+#Ignore vagrant output
+.vagrant

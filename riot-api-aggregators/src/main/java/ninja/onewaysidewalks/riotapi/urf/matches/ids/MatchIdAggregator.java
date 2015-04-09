@@ -52,6 +52,7 @@ public class MatchIdAggregator {
 
         MatchIdPersistence matchIdPersistence = null;
         CompetingConsumerImpl<Long> competingConsumer = null;
+        ObjectMapper objectMapper = new ObjectMapper();
 
         //There needs to be a global cassandra cluster management piece
         //That takes in configuration, and shares the session for all who need it
@@ -78,30 +79,9 @@ public class MatchIdAggregator {
             producerConfig.setHost("192.168.33.11");
 
             //in a real service these things would be registered into a container, and resolved out on demand
-            final RiotClient riotClient = new RiotClientImpl();
+            final RiotClient riotClient = new RiotClientImpl(objectMapper);
             matchIdPersistence = new MatchIdPersistenceImpl(session);
-            final Producer producer = new FanoutProducerImpl(new ObjectMapper(), producerConfig);
-
-            //TODO: TEST CODE REMOVE BEGIN
-            final CompetingConsumerConfig competingConsumerConfig = new CompetingConsumerConfig();
-            competingConsumerConfig.setHost("192.168.33.11");
-            competingConsumerConfig.setQueue("test_queue");
-            competingConsumerConfig.setTopic("match_completed");
-
-            competingConsumer = new CompetingConsumerImpl<>(new ObjectMapper(), competingConsumerConfig, new MessageHandler<Long>() {
-                @Override
-                public void handleMessage(Long message) {
-                    log.info("Received MessageId: {}", message);
-                }
-
-                @Override
-                public Class<Long> getMessageType() {
-                    return Long.class;
-                }
-            });
-
-            competingConsumer.start();
-            //TODO: TEST CODE REMOVE END
+            final Producer producer = new FanoutProducerImpl(objectMapper, producerConfig);
 
             Queue<DateTime> bucketsToRead = new ArrayDeque<>(getTimeBuckets(beginning, end));
 
@@ -116,15 +96,14 @@ public class MatchIdAggregator {
                         bucketsToRead.remove();
                         continue;
                     }
-//
+
                     log.info("querying for bucket {}", timestamp);
                     List<Long> matchIds = riotClient.getMatchIdsForUrf(timestamp, RiotClientImpl.Region.NA);
                     matchIdPersistence.writeBucket(timestamp, matchIds);
 
-//                    for (Long matchId : matchIds) {
-//                        producer.sendMessage("match_completed", matchId);
-//                    }
-//                    Thread.sleep(1000);
+                    for (Long matchId : matchIds) {
+                        producer.sendMessage("match_completed", matchId);
+                    }
 
                     bucketsToRead.remove();
                 } catch (Exception ex) {

@@ -4,5 +4,5 @@ import ninja.onewaysidewalks.riotapi.models.Match;
 
 public interface MatchPersistence {
     Match getMatchById(Long id);
-    void saveRawMatch(Long id, String matchJson);
+    void saveMatch(Long id, Match match);
 }

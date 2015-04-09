@@ -12,6 +12,8 @@ import ninja.onewaysidewalks.messaging.client.consumers.MessageHandler;
 import ninja.onewaysidewalks.utilities.ScheduledThreadExecutor;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 public class CompetingConsumerImpl<T> implements Consumer<T> {
@@ -46,10 +48,21 @@ public class CompetingConsumerImpl<T> implements Consumer<T> {
 
         channel = connection.createChannel();
 
-        channel.queueDeclare(consumerConfig.getQueue(), true, false, false, null);
-
+        //Setup exchanges if they dont already exist
         channel.exchangeDeclare(consumerConfig.getTopic(), "fanout");
+        String dlqTopic = String.format("%s.dlq", consumerConfig.getTopic());
+        channel.exchangeDeclare(dlqTopic, "fanout");
+
+
+        //Declare queue and bind it to the topic
+        Map<String, Object> args = new HashMap<>();
+        args.put("x-dead-letter-exchange", dlqTopic);//Setup Dead Letter Exchange forwarding, if it doesnt already exist
+        channel.queueDeclare(consumerConfig.getQueue(), true, false, false, args);
         channel.queueBind(consumerConfig.getQueue(), consumerConfig.getTopic(), "");
+
+        //Declare DLQ and bind it to the DLQ topic, to prevent messages from disappearing
+        channel.queueDeclare(consumerConfig.getQueue() + ".dlq", true, false, false, null);
+        channel.queueBind(consumerConfig.getQueue() + ".dlq", dlqTopic, "");
 
         final QueueingConsumer consumer = new QueueingConsumer(channel);
         channel.basicConsume(consumerConfig.getQueue(), false, consumer);
@@ -62,24 +75,32 @@ public class CompetingConsumerImpl<T> implements Consumer<T> {
             public void run() {
 
                 while(true) {
+
                     try {
+
                         QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 
                         Object uncheckedMessage = objectMapper.readValue(delivery.getBody(), messageClass);
 
-                        if (! uncheckedMessage.getClass().isAssignableFrom(messageClass)) {
+                        if (!uncheckedMessage.getClass().isAssignableFrom(messageClass)) {
                             throw new RuntimeException("Message serialization doesnt match handler");
                         }
 
                         T message = (T) uncheckedMessage; //unchecked cast? TODO: find a better solution to the dynamic type checking
 
                         //forward onto handler.
-                        messageHandler.handleMessage(message);
+                        try {
+                            messageHandler.handleMessage(message);
+                        } catch (RuntimeException re) {
+                            log.error("couldnt process message: {}", message);
+                            //Message should be unack'd to go to another consumer if it hasnt been redelivered.
+                            //if it has been redelivered, it should be deadlettered
+                            channel.basicNack(delivery.getEnvelope().getDeliveryTag(), false, !delivery.getEnvelope().isRedeliver());
+                        }
 
                         channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
                     } catch (Exception ex) {
                         log.error("couldnt consume and ack message", ex);
-                        throw new RuntimeException(ex);
                     }
                 }
             }

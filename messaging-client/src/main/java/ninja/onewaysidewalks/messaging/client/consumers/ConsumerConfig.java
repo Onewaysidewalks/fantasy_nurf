@@ -8,6 +8,7 @@ public abstract class ConsumerConfig {
     private String username;
     private String password;
     private String topic;
+    private int maxRetries = 2;
 
     //TODO: add fields such as when to timeout, concurrent consumers, etc.
 }

@@ -11,7 +11,9 @@ dependencies {
     compile "com.rabbitmq:amqp-client:3.5.0"
     compile "org.projectlombok:lombok:1.16.2"
     compile "com.fasterxml.jackson.core:jackson-databind:2.5.1"
-    compile "io.dropwizard:dropwizard-logging:0.8.0"
+    compile "com.google.inject:guice:4.0-beta5"
+    compile "com.hubspot.dropwizard:dropwizard-guice:0.8.0"
+    compile "io.dropwizard:dropwizard-core:0.8.0"
 
     testCompile ("org.testng:testng:6.8.7") {
         exclude module: "junit"

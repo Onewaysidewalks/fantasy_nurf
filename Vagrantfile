@@ -22,17 +22,17 @@ Vagrant.configure(2) do |config|
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
   config.vm.network "private_network", ip: "192.168.33.11"
-  config.vm.network "forwarded_port", guest: 9160, guest_ip: "192.168.33.10", host: 9160
+  # config.vm.network "forwarded_port", guest: 9160, guest_ip: "192.168.33.10", host: 9160
 
   config.vm.network "private_network", ip: "192.168.33.12"
-  config.vm.network "forwarded_port", guest: 9160, guest_ip: "192.168.33.11", host: 9160
+  # config.vm.network "forwarded_port", guest: 9160, guest_ip: "192.168.33.11", host: 9160
 
   config.vm.network "private_network", ip: "192.168.33.13"
-  config.vm.network "forwarded_port", guest: 9160, guest_ip: "192.168.33.12", host: 9160
+  # config.vm.network "forwarded_port", guest: 9160, guest_ip: "192.168.33.12", host: 9160
 
   #Rabbitmq ports
-  config.vm.network "forwarded_port", guest: 5672, guest_ip: "192.168.33.10", host: 5672
-  config.vm.network "forwarded_port", guest: 15672, guest_ip: "192.168.33.10", host: 15672
+  config.vm.network "forwarded_port", guest: 5672, guest_ip: "192.168.33.11", host: 5672
+  config.vm.network "forwarded_port", guest: 15672, guest_ip: "192.168.33.11", host: 15672
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on

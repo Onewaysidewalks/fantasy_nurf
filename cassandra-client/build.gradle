@@ -1,0 +1,17 @@
+apply plugin: "java"
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    compile ("com.datastax.cassandra:cassandra-driver-core:2.1.5") {
+        exclude module: "metrics-core"
+    }
+    compile "org.projectlombok:lombok:1.16.2"
+    compile "com.google.inject:guice:4.0-beta5"
+    compile "io.dropwizard:dropwizard-lifecycle:0.8.0"
+    compile "com.hubspot.dropwizard:dropwizard-guice:0.8.0"
+    compile "io.dropwizard:dropwizard-core:0.8.0"
+}

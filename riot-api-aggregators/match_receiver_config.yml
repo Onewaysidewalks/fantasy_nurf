@@ -1,0 +1,15 @@
+server:
+  applicationConnectors:
+    - type: http
+      port: 8902
+  adminConnectors:
+    - type: http
+      port: 9902
+
+messagingConsumer:
+    host: 192.168.33.11
+    queue: match_completed
+    topic: match_completed
+
+cassandraConfig:
+    contactPoints: ["127.0.0.1"]

@@ -7,9 +7,13 @@ import com.datastax.driver.core.querybuilder.QueryBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import ninja.onewaysidewalks.riotapi.models.Match;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
+import javax.inject.Inject;
 import java.io.IOException;
 
+import static com.datastax.driver.core.querybuilder.QueryBuilder.add;
 import static com.datastax.driver.core.querybuilder.QueryBuilder.eq;
 
 @Slf4j
@@ -21,6 +25,7 @@ public class MatchPersistenceImpl implements MatchPersistence {
     private static final String MATCHES_TABLE = "matches";
     private static final String RAW_MATCHES_KEYSPACE = "raw_matches";
 
+    @Inject
     public MatchPersistenceImpl(ObjectMapper objectMapper, Session session) {
         this.session = session;
         this.objectMapper = objectMapper;
@@ -47,11 +52,15 @@ public class MatchPersistenceImpl implements MatchPersistence {
     }
 
     @Override
-    public void saveRawMatch(Long matchId, String matchJson) {
-        session.execute(QueryBuilder
-                .insertInto(RAW_MATCHES_KEYSPACE, MATCHES_TABLE)
-                .value("match_id", matchId)
-                .value("match_json", matchJson)
-                .setConsistencyLevel(ConsistencyLevel.ONE));
+    public void saveMatch(Long matchId, Match match) {
+        try {
+            session.execute(QueryBuilder
+                    .insertInto(RAW_MATCHES_KEYSPACE, MATCHES_TABLE)
+                    .value("match_id", matchId)
+                    .value("match_json", objectMapper.writeValueAsString(match))
+                    .setConsistencyLevel(ConsistencyLevel.ONE));
+        } catch (IOException ioe) {
+            throw new RuntimeException(ioe);
+        }
     }
 }

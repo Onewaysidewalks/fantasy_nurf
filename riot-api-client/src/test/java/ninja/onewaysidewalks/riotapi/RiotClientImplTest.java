@@ -1,5 +1,6 @@
 package ninja.onewaysidewalks.riotapi;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -10,7 +11,7 @@ public class RiotClientImplTest {
 
     @BeforeMethod
     public void setUp() {
-        subject = new RiotClientImpl();
+        subject = new RiotClientImpl(new ObjectMapper());
     }
 
     @Test

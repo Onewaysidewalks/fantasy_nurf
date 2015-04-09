@@ -1,7 +1,10 @@
 package ninja.onewaysidewalks.riotapi.models;
 
+import lombok.Data;
+
 import java.util.List;
 
+@Data
 public class Event {
     private int creatorId;
     private int itemAfter;

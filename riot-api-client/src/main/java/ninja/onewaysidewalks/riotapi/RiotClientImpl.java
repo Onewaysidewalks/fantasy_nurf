@@ -65,6 +65,7 @@ public class RiotClientImpl implements RiotClient {
     public Match getMatchById(Region region, long matchId) {
         String jsonString = getJsonResponseWithRateLimiting(client.target(getMatchUrl(region, matchId))
                 .queryParam("api_key", RIOT_API_KEY)
+                .queryParam("includeTimeline", "true")
                 .request(MediaType.APPLICATION_JSON_TYPE));
 
         if (StringUtils.isBlank(jsonString)) {

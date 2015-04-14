@@ -6,5 +6,6 @@ public class PersistenceModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(MatchPersistence.class).to(MatchPersistenceImpl.class);
+        bind(MatchIdTimeBucketPersistence.class).to(MatchIdTimeBucketPersistenceImpl.class);
     }
 }

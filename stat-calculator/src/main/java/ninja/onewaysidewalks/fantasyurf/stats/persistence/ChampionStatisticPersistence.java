@@ -1,4 +1,4 @@
 package ninja.onewaysidewalks.fantasyurf.stats.persistence;
 
-public interface MatchIdTimeBucketPersistence {
+public interface ChampionStatisticPersistence {
 }

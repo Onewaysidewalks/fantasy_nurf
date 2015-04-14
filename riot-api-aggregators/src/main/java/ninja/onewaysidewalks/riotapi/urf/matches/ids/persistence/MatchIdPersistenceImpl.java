@@ -5,6 +5,7 @@ import com.datastax.driver.core.Session;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.datastax.driver.core.querybuilder.QueryBuilder.eq;
@@ -28,25 +29,18 @@ public class MatchIdPersistenceImpl implements MatchIdPersistence {
     }
 
     @Override
-    public boolean bucketExists(long timestamp) {
+    public List<Long> getIdsFromBucket(long timestamp) {
         Row row = session.execute(QueryBuilder.select().from(RAW_MATCHES_KEYSPACE, MATCH_ID_TABLE)
                 .where(eq("time_bucket", timestamp))).one();
 
         if (row == null) {
-            return false;
+            return new ArrayList<>();
         }
 
         if (!row.getColumnDefinitions().contains("match_ids")) {
-            return false;
+            return new ArrayList<>();
         }
 
-        List<Long> matchIds = row.getList("match_ids", Long.class);
-        if (matchIds == null
-                || matchIds.size() == 0) {
-            log.warn("Record written for time with no match ids");
-            return  false;
-        } else {
-            return true;
-        }
+        return row.getList("match_ids", Long.class);
     }
 }

@@ -1,4 +1,4 @@
-package ninja.onewaysidewalks.fantasyurf.stats.persistence;
+package ninja.onewaysidewalks.riotapi.urf.matches.persistence;
 
 public enum TimeBucketInterval {
     MINUTE,

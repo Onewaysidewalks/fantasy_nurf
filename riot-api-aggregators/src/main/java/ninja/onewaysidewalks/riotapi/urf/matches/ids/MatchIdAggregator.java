@@ -50,7 +50,7 @@ public class MatchIdAggregator {
 
     public void run(String[] args) throws Exception {
 
-        MatchIdPersistence matchIdPersistence = null;
+        MatchIdPersistence matchIdPersistence;
         CompetingConsumerImpl<Long> competingConsumer = null;
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -60,6 +60,8 @@ public class MatchIdAggregator {
         Session session = cluster.connect();
 
         try {
+            boolean enqueueAlreadySavedIds = false;
+
             //The default start time
             DateTime beginning = DateTime.now(DateTimeZone.UTC).minusHours(8);
 
@@ -71,6 +73,10 @@ public class MatchIdAggregator {
 
                 if (args.length >= 2) {
                     end  = new DateTime(new Long(args[1]), DateTimeZone.UTC);
+
+                    if (args.length >= 3) {
+                        enqueueAlreadySavedIds = Boolean.parseBoolean(args[2]);
+                    }
                 }
             }
 
@@ -91,10 +97,20 @@ public class MatchIdAggregator {
                 try {
                     long timestamp = bucket.getMillis() / 1000; //Riot API expects 5 minute buckets, with SECOND granularity
 
-                    if (matchIdPersistence.bucketExists(timestamp)) {
+                    List<Long> ids = matchIdPersistence.getIdsFromBucket(timestamp);
+                    if (ids.size() > 0) {
                         log.info("bucket already written, skipping. Bucket {}", timestamp);
                         bucketsToRead.remove();
+
+                        if (enqueueAlreadySavedIds) {
+                            for (Long id : ids) {
+                                producer.sendMessage("match_completed", id);
+                            }
+                        }
+
                         continue;
+                    } else {
+                        log.warn("Record written for time with no match ids, retrying call to RIOT");
                     }
 
                     log.info("querying for bucket {}", timestamp);

@@ -11,5 +11,10 @@ messagingConsumer:
     queue: stats_match_recorded
     topic: match_recorded
 
+messagingProducer:
+    host: 192.168.33.11
+
 cassandraConfig:
     contactPoints: ["127.0.0.1"]
+
+matchApiUrl: "http://localhost:8902/matches/"

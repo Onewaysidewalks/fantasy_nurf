@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface MatchIdPersistence {
     void writeBucket(long timestamp, List<Long> matchIds);
-    boolean bucketExists(long timestamp);
+    List<Long> getIdsFromBucket(long timestamp);
 }

@@ -1,4 +1,4 @@
-package ninja.onewaysidewalks.fantasyurf.stats.receiver;
+package ninja.onewaysidewalks.fantasyurf.stats.supervisor;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.google.inject.Injector;
@@ -8,22 +8,28 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import ninja.onewaysidewalks.cassandra.client.ConfigWithCassandra;
 import ninja.onewaysidewalks.cassandra.client.LifeCycleManager;
+import ninja.onewaysidewalks.fantasyurf.stats.HttpModule;
 import ninja.onewaysidewalks.fantasyurf.stats.persistence.PersistenceModule;
+import ninja.onewaysidewalks.fantasyurf.stats.worker.StatCalculatorWorker;
 import ninja.onewaysidewalks.messaging.client.consumers.rabbitmq.guice.CompetingConsumerLifecycleManager;
 import ninja.onewaysidewalks.riotapi.guice.RiotModule;
+import ninja.onewaysidewalks.riotapi.urf.matches.shared.MatchRecordedMessage;
 
 import javax.inject.Provider;
 
-public class StatMatchReceiverSvc extends Application<StatMatchReceiverConfig> {
+/**
+ * A simple service that prompts the creation of statistics, by pinging simple 'doWork' messages
+ */
+public class StatSupervisorSvc extends Application<StatSupervisorConfig> {
 
-    private LifeCycleManager<StatMatchReceiverConfig> cassandraLifeCycleManager;
-    private StatMatchReceiverConfig svcConfig;
+    private LifeCycleManager<StatSupervisorConfig> cassandraLifeCycleManager;
+    private StatSupervisorConfig svcConfig;
     private Provider<Injector> injectorProvider;
 
     @Override
-    public void initialize(Bootstrap<StatMatchReceiverConfig> bootstrap) {
+    public void initialize(Bootstrap<StatSupervisorConfig> bootstrap) {
 
-        GuiceBundle.Builder<StatMatchReceiverConfig> builder = GuiceBundle.newBuilder();
+        GuiceBundle.Builder<StatSupervisorConfig> builder = GuiceBundle.newBuilder();
 
         cassandraLifeCycleManager = new LifeCycleManager<>(new Provider<ConfigWithCassandra>() {
             @Override
@@ -35,9 +41,11 @@ public class StatMatchReceiverSvc extends Application<StatMatchReceiverConfig> {
         //Add modules for injection configuration
         builder = builder
                 .addModule(new PersistenceModule())
-                .addModule(new RiotModule());
+                .addModule(new RiotModule())
+                .addModule(new HttpModule())
+                .addModule(new ProducerModule());
 
-        final GuiceBundle<StatMatchReceiverConfig> guiceBundle = builder.build();
+        final GuiceBundle<StatSupervisorConfig> guiceBundle = builder.build();
 
         injectorProvider = new Provider<Injector>() {
             @Override
@@ -52,7 +60,7 @@ public class StatMatchReceiverSvc extends Application<StatMatchReceiverConfig> {
     }
 
     @Override
-    public void run(StatMatchReceiverConfig configuration, Environment environment) throws Exception {
+    public void run(StatSupervisorConfig configuration, Environment environment) throws Exception {
         svcConfig = configuration; //initializes provider
 
         environment.getObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -60,13 +68,14 @@ public class StatMatchReceiverSvc extends Application<StatMatchReceiverConfig> {
         environment.lifecycle().manage(cassandraLifeCycleManager);
 
         //register queue listener
-        CompetingConsumerLifecycleManager<Long> competingConsumerLifecycleManager = new CompetingConsumerLifecycleManager<>(
-                configuration.getMessagingConsumer(), injectorProvider.get(), StatMatchReceiver.class);
+        CompetingConsumerLifecycleManager<MatchRecordedMessage> competingConsumerLifecycleManager
+                = new CompetingConsumerLifecycleManager<>(
+                configuration.getMessagingConsumer(), injectorProvider.get(), StatCalculatorWorker.class);
 
         environment.lifecycle().manage(competingConsumerLifecycleManager);
     }
 
     public static void main(String[] args) throws Exception {
-        new StatMatchReceiverSvc().run(args);
+        new StatSupervisorSvc().run(args);
     }
 }

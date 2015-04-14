@@ -1,10 +1,7 @@
 package ninja.onewaysidewalks.messaging.client.consumers.rabbitmq;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.QueueingConsumer;
+import com.rabbitmq.client.*;
 import lombok.extern.slf4j.Slf4j;
 import ninja.onewaysidewalks.messaging.client.consumers.CompetingConsumerConfig;
 import ninja.onewaysidewalks.messaging.client.consumers.Consumer;
@@ -98,7 +95,14 @@ public class CompetingConsumerImpl<T> implements Consumer<T> {
                             channel.basicNack(delivery.getEnvelope().getDeliveryTag(), false, !delivery.getEnvelope().isRedeliver());
                         }
 
-                        channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+                        try {
+                            channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+                        } catch (AlreadyClosedException ace) {
+                            //Something went wrong with the channel
+                            //Restart it
+                            channel = connection.createChannel();
+                            channel.basicConsume(consumerConfig.getQueue(), false, consumer);
+                        }
                     } catch (Exception ex) {
                         log.error("couldnt consume and ack message", ex);
                     }

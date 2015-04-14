@@ -12,7 +12,7 @@ public class KillsByChampionStatProvider implements ChampionSpecificStatProvider
     public StatValue getStatForChampionFromMatch(Participant participant) {
         StatValue statValue = new StatValue();
         statValue.setType(StatValue.StatType.CHAMPION_SPECIFIC);
-        statValue.setValue(new BigDecimal(participant.getStats().getKills()));
+        statValue.setValue(participant.getStats().getKills());
 
         return statValue;
     }

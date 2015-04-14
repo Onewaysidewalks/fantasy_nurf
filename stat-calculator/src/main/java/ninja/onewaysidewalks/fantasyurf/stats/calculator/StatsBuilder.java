@@ -100,4 +100,8 @@ public class StatsBuilder {
                 new DeathsByChampionStatProvider()
         });
     }
+
+    public static StatsBuilder start(ChampionSpecificStatProvider[] statProviders) {
+        return new StatsBuilder(statProviders);
+    }
 }

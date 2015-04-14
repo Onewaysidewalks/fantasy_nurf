@@ -1,4 +1,4 @@
-package ninja.onewaysidewalks.fantasyurf.stats.supervisor;
+package ninja.onewaysidewalks.fantasyurf.stats.worker;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.google.inject.Injector;
@@ -8,28 +8,27 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import ninja.onewaysidewalks.cassandra.client.ConfigWithCassandra;
 import ninja.onewaysidewalks.cassandra.client.LifeCycleManager;
-import ninja.onewaysidewalks.fantasyurf.stats.HttpModule;
 import ninja.onewaysidewalks.fantasyurf.stats.persistence.PersistenceModule;
-import ninja.onewaysidewalks.fantasyurf.stats.worker.StatCalculatorWorker;
+import ninja.onewaysidewalks.fantasyurf.stats.supervisor.ProducerModule;
 import ninja.onewaysidewalks.messaging.client.consumers.rabbitmq.guice.CompetingConsumerLifecycleManager;
 import ninja.onewaysidewalks.riotapi.guice.RiotModule;
-import ninja.onewaysidewalks.riotapi.urf.matches.shared.MatchRecordedMessage;
+import org.joda.time.DateTime;
 
 import javax.inject.Provider;
 
 /**
  * A simple service that prompts the creation of statistics, by pinging simple 'doWork' messages
  */
-public class StatSupervisorSvc extends Application<StatSupervisorConfig> {
+public class StatCalculatorWorkerSvc extends Application<StatCalculatorWorkerConfig> {
 
-    private LifeCycleManager<StatSupervisorConfig> cassandraLifeCycleManager;
-    private StatSupervisorConfig svcConfig;
+    private LifeCycleManager<StatCalculatorWorkerConfig> cassandraLifeCycleManager;
+    private StatCalculatorWorkerConfig svcConfig;
     private Provider<Injector> injectorProvider;
 
     @Override
-    public void initialize(Bootstrap<StatSupervisorConfig> bootstrap) {
+    public void initialize(Bootstrap<StatCalculatorWorkerConfig> bootstrap) {
 
-        GuiceBundle.Builder<StatSupervisorConfig> builder = GuiceBundle.newBuilder();
+        GuiceBundle.Builder<StatCalculatorWorkerConfig> builder = GuiceBundle.newBuilder();
 
         cassandraLifeCycleManager = new LifeCycleManager<>(new Provider<ConfigWithCassandra>() {
             @Override
@@ -42,10 +41,9 @@ public class StatSupervisorSvc extends Application<StatSupervisorConfig> {
         builder = builder
                 .addModule(new PersistenceModule())
                 .addModule(new RiotModule())
-                .addModule(new HttpModule())
                 .addModule(new ProducerModule());
 
-        final GuiceBundle<StatSupervisorConfig> guiceBundle = builder.build();
+        final GuiceBundle<StatCalculatorWorkerConfig> guiceBundle = builder.build();
 
         injectorProvider = new Provider<Injector>() {
             @Override
@@ -60,7 +58,7 @@ public class StatSupervisorSvc extends Application<StatSupervisorConfig> {
     }
 
     @Override
-    public void run(StatSupervisorConfig configuration, Environment environment) throws Exception {
+    public void run(StatCalculatorWorkerConfig configuration, Environment environment) throws Exception {
         svcConfig = configuration; //initializes provider
 
         environment.getObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -68,7 +66,7 @@ public class StatSupervisorSvc extends Application<StatSupervisorConfig> {
         environment.lifecycle().manage(cassandraLifeCycleManager);
 
         //register queue listener
-        CompetingConsumerLifecycleManager<MatchRecordedMessage> competingConsumerLifecycleManager
+        CompetingConsumerLifecycleManager<DateTime> competingConsumerLifecycleManager
                 = new CompetingConsumerLifecycleManager<>(
                 configuration.getMessagingConsumer(), injectorProvider.get(), StatCalculatorWorker.class);
 
@@ -76,6 +74,6 @@ public class StatSupervisorSvc extends Application<StatSupervisorConfig> {
     }
 
     public static void main(String[] args) throws Exception {
-        new StatSupervisorSvc().run(args);
+        new StatCalculatorWorkerSvc().run(args);
     }
 }

@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 public class AssistsByChampionStatProvider implements ChampionSpecificStatProvider {
     @Override
     public StatValue getStatForChampionFromMatch(Participant participant) {
-        return new StatValue(new BigDecimal(participant.getStats().getAssists()), StatValue.StatType.CHAMPION_SPECIFIC);
+        return new StatValue(participant.getStats().getAssists(), StatValue.StatType.CHAMPION_SPECIFIC);
     }
 
     @Override

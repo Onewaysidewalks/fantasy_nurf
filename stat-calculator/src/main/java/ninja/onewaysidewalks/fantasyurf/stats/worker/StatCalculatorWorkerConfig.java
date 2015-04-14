@@ -1,4 +1,4 @@
-package ninja.onewaysidewalks.fantasyurf.stats.supervisor;
+package ninja.onewaysidewalks.fantasyurf.stats.worker;
 
 import io.dropwizard.Configuration;
 import lombok.Data;
@@ -10,7 +10,7 @@ import ninja.onewaysidewalks.messaging.client.producers.ProducerConfig;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class StatSupervisorConfig extends Configuration implements ConfigWithCassandra {
+public class StatCalculatorWorkerConfig extends Configuration implements ConfigWithCassandra {
     private Config cassandraConfig;
 
     private CompetingConsumerConfig messagingConsumer;

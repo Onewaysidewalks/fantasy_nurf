@@ -11,5 +11,6 @@ public class PersistenceModule extends AbstractModule {
     protected void configure() {
         bind(MatchIdTimeBucketPersistence.class).to(MatchIdTimeBucketPersistenceImpl.class);
         bind(MatchPersistence.class).to(MatchPersistenceImpl.class);
+        bind(ChampionStatisticPersistence.class).to(ChampionStatisticPersistenceImpl.class);
     }
 }

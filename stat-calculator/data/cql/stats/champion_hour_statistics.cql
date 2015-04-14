@@ -1,6 +1,6 @@
-CREATE TABLE IF NOT EXISTS champion_statistics (
+CREATE TABLE IF NOT EXISTS champion_hour_statistics (
     champion_time_bucket text,
-    stats map<text, decimal>,
+    stats map<text, double>,
     PRIMARY KEY(champion_time_bucket)
 );
 

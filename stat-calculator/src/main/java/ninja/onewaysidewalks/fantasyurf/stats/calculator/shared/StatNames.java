@@ -1,4 +1,4 @@
-package ninja.onewaysidewalks.fantasyurf.stats.calculator;
+package ninja.onewaysidewalks.fantasyurf.stats.calculator.shared;
 
 public class StatNames {
     public static String mean(String statName) {

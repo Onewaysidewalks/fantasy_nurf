@@ -1,4 +1,4 @@
-package ninja.onewaysidewalks.fantasyurf.stats.persistence;
+package ninja.onewaysidewalks.fantasyurf.stats.calculator.persistence;
 
 import org.joda.time.DateTime;
 

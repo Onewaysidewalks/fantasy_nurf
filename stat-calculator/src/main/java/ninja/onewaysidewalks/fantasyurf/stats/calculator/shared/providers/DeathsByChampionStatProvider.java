@@ -1,10 +1,8 @@
-package ninja.onewaysidewalks.fantasyurf.stats.calculator.providers;
+package ninja.onewaysidewalks.fantasyurf.stats.calculator.shared.providers;
 
-import ninja.onewaysidewalks.fantasyurf.stats.calculator.ChampionSpecificStatProvider;
-import ninja.onewaysidewalks.fantasyurf.stats.calculator.StatValue;
+import ninja.onewaysidewalks.fantasyurf.stats.calculator.shared.ChampionSpecificStatProvider;
+import ninja.onewaysidewalks.fantasyurf.stats.calculator.shared.StatValue;
 import ninja.onewaysidewalks.riotapi.models.Participant;
-
-import java.math.BigDecimal;
 
 public class DeathsByChampionStatProvider implements ChampionSpecificStatProvider {
     @Override

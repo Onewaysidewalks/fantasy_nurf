@@ -1,4 +1,4 @@
-package ninja.onewaysidewalks.fantasyurf.stats.calculator;
+package ninja.onewaysidewalks.fantasyurf.stats.calculator.shared;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

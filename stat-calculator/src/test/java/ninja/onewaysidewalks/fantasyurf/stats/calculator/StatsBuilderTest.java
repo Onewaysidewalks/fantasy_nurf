@@ -1,8 +1,10 @@
 package ninja.onewaysidewalks.fantasyurf.stats.calculator;
 
-import ninja.onewaysidewalks.fantasyurf.stats.calculator.providers.AssistsByChampionStatProvider;
-import ninja.onewaysidewalks.fantasyurf.stats.calculator.providers.DeathsByChampionStatProvider;
-import ninja.onewaysidewalks.fantasyurf.stats.calculator.providers.KillsByChampionStatProvider;
+import ninja.onewaysidewalks.fantasyurf.stats.calculator.shared.ChampionSpecificStatProvider;
+import ninja.onewaysidewalks.fantasyurf.stats.calculator.shared.StatsBuilder;
+import ninja.onewaysidewalks.fantasyurf.stats.calculator.shared.providers.AssistsByChampionStatProvider;
+import ninja.onewaysidewalks.fantasyurf.stats.calculator.shared.providers.DeathsByChampionStatProvider;
+import ninja.onewaysidewalks.fantasyurf.stats.calculator.shared.providers.KillsByChampionStatProvider;
 import ninja.onewaysidewalks.riotapi.models.Match;
 import ninja.onewaysidewalks.riotapi.models.Participant;
 import ninja.onewaysidewalks.riotapi.models.ParticipantStats;
@@ -18,7 +20,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class StatsBuilderTest {
     @Test
     public void statBuilder_noMatches_succeedsWithEmptyMap() {
-        Map<Integer, Map<String, Double>> statistics = StatsBuilder.start(new ChampionSpecificStatProvider[] {
+        Map<Integer, Map<String, Double>> statistics = StatsBuilder.start(new ChampionSpecificStatProvider[]{
                 new KillsByChampionStatProvider(),
                 new AssistsByChampionStatProvider(),
                 new DeathsByChampionStatProvider()

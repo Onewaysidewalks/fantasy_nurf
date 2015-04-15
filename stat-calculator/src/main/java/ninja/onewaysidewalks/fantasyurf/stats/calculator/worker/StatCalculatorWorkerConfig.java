@@ -1,4 +1,4 @@
-package ninja.onewaysidewalks.fantasyurf.stats.worker;
+package ninja.onewaysidewalks.fantasyurf.stats.calculator.worker;
 
 import io.dropwizard.Configuration;
 import lombok.Data;

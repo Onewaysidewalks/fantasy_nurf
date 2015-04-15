@@ -1,13 +1,11 @@
-package ninja.onewaysidewalks.fantasyurf.stats.persistence;
+package ninja.onewaysidewalks.fantasyurf.stats.calculator.persistence;
 
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
 import org.joda.time.DateTime;
 
+import javax.inject.Inject;
 import java.util.Map;
-
-import static com.datastax.driver.core.querybuilder.QueryBuilder.add;
-import static com.datastax.driver.core.querybuilder.QueryBuilder.eq;
 
 public class ChampionStatisticPersistenceImpl implements ChampionStatisticPersistence {
 
@@ -15,6 +13,7 @@ public class ChampionStatisticPersistenceImpl implements ChampionStatisticPersis
     private static final String STATS_KEYSPACE = "stats";
     private static final String HOUR_BUCKET_TABLE = "champion_hour_statistics";
 
+    @Inject
     public ChampionStatisticPersistenceImpl(Session session) {
         this.session = session;
     }

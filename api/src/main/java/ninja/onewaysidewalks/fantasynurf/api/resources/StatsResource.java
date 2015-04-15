@@ -1,14 +1,15 @@
 package ninja.onewaysidewalks.fantasynurf.api.resources;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import io.dropwizard.jersey.params.DateTimeParam;
+
+import javax.ws.rs.*;
 
 @Path("/stats")
 public interface StatsResource {
-    @Path("/{game_id}")
+    @Path("/{champion_id}")
     @GET
     @Produces("application/json")
-    public Object getGameStats(@PathParam("game_id") String gameId);
+    public Object getGameStats(@PathParam("champion_id") Integer championId,
+                               @QueryParam("start_date") DateTimeParam startDate,
+                               @QueryParam("end_date") DateTimeParam endDateParam);
 }

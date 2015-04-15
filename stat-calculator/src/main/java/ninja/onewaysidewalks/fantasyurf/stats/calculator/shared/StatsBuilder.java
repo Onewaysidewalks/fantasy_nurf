@@ -1,6 +1,6 @@
-package ninja.onewaysidewalks.fantasyurf.stats.calculator;
+package ninja.onewaysidewalks.fantasyurf.stats.calculator.shared;
 
-import ninja.onewaysidewalks.fantasyurf.stats.calculator.providers.*;
+import ninja.onewaysidewalks.fantasyurf.stats.calculator.shared.providers.*;
 import ninja.onewaysidewalks.riotapi.models.Match;
 import ninja.onewaysidewalks.riotapi.models.Participant;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -22,21 +22,23 @@ public class StatsBuilder {
 
     public StatsBuilder withMatch(Match match) {
 
-        for (Participant participant : match.getParticipants()) {
-            for (ChampionSpecificStatProvider statProvider : championSpecificStatProviders) {
-                StatValue statValue = statProvider.getStatForChampionFromMatch(participant);
+        if (match.getParticipants() != null) {
+            for (Participant participant : match.getParticipants()) {
+                for (ChampionSpecificStatProvider statProvider : championSpecificStatProviders) {
+                    StatValue statValue = statProvider.getStatForChampionFromMatch(participant);
 
-                //This champion hasnt been seen yet, initialize his/her/its mapping
-                if (!statisticsMap.containsKey(participant.getChampionId())) {
-                    statisticsMap.put(participant.getChampionId(), new HashMap<String, DescriptiveStatistics>());
+                    //This champion hasnt been seen yet, initialize his/her/its mapping
+                    if (!statisticsMap.containsKey(participant.getChampionId())) {
+                        statisticsMap.put(participant.getChampionId(), new HashMap<String, DescriptiveStatistics>());
+                    }
+
+                    //This champion does not yet have this particular statValue recorded, initialize its statValue holder (i.e. DescriptiveStatistics)
+                    if (!statisticsMap.get(participant.getChampionId()).containsKey(statProvider.getStatName())) {
+                        statisticsMap.get(participant.getChampionId()).put(statProvider.getStatName(), new DescriptiveStatistics());
+                    }
+
+                    statisticsMap.get(participant.getChampionId()).get(statProvider.getStatName()).addValue(statValue.getValue());
                 }
-
-                //This champion does not yet have this particular statValue recorded, initlialize its statValue holder (i.e. DescriptiveStatistics)
-                if (!statisticsMap.get(participant.getChampionId()).containsKey(statProvider.getStatName())) {
-                    statisticsMap.get(participant.getChampionId()).put(statProvider.getStatName(), new DescriptiveStatistics());
-                }
-
-                statisticsMap.get(participant.getChampionId()).get(statProvider.getStatName()).addValue(statValue.getValue());
             }
         }
 

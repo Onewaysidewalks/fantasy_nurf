@@ -1,18 +1,16 @@
-package ninja.onewaysidewalks.fantasyurf.stats.worker;
+package ninja.onewaysidewalks.fantasyurf.stats.calculator.worker;
 
 import lombok.extern.slf4j.Slf4j;
-import ninja.onewaysidewalks.fantasyurf.stats.calculator.StatsBuilder;
+import ninja.onewaysidewalks.fantasyurf.stats.calculator.shared.StatsBuilder;
+import ninja.onewaysidewalks.fantasyurf.stats.calculator.persistence.ChampionStatisticPersistence;
 import ninja.onewaysidewalks.riotapi.models.Match;
 import ninja.onewaysidewalks.riotapi.urf.matches.persistence.MatchIdTimeBucketPersistence;
 import ninja.onewaysidewalks.riotapi.urf.matches.persistence.MatchPersistence;
 import ninja.onewaysidewalks.riotapi.urf.matches.persistence.TimeBucketInterval;
 import ninja.onewaysidewalks.messaging.client.consumers.MessageHandler;
-import ninja.onewaysidewalks.riotapi.urf.matches.shared.MatchRecordedMessage;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 
 import javax.inject.Inject;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,13 +19,16 @@ public class StatCalculatorWorker implements MessageHandler<DateTime> {
 
     private final MatchPersistence matchPersistence;
     private final MatchIdTimeBucketPersistence matchIdTimeBucketPersistence;
+    private final ChampionStatisticPersistence championStatisticPersistence;
 
     @Inject
     public StatCalculatorWorker(
             MatchPersistence matchPersistence,
-            MatchIdTimeBucketPersistence matchIdTimeBucketPersistence) {
+            MatchIdTimeBucketPersistence matchIdTimeBucketPersistence,
+            ChampionStatisticPersistence championStatisticPersistence) {
         this.matchPersistence = matchPersistence;
         this.matchIdTimeBucketPersistence = matchIdTimeBucketPersistence;
+        this.championStatisticPersistence = championStatisticPersistence;
     }
 
     @Override
@@ -44,12 +45,14 @@ public class StatCalculatorWorker implements MessageHandler<DateTime> {
         for (Long matchId : matchIds) {
             Match match = matchPersistence.getMatchById(matchId);
 
-            statsBuilder.withMatch(match);
+            if (match != null) {
+                statsBuilder.withMatch(match);
+            }
         }
 
         Map<Integer, Map<String, Double>> statisticsMap = statsBuilder.buildStats();
 
-        //TODO: save map to database
+        championStatisticPersistence.saveStatisticsForTimeBucket(statisticsMap, timeBucketMessage);
     }
 
     @Override

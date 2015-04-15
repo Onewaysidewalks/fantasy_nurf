@@ -1,4 +1,4 @@
-package ninja.onewaysidewalks.fantasyurf.stats.worker;
+package ninja.onewaysidewalks.fantasyurf.stats.calculator.worker;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.google.inject.Injector;
@@ -8,8 +8,9 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import ninja.onewaysidewalks.cassandra.client.ConfigWithCassandra;
 import ninja.onewaysidewalks.cassandra.client.LifeCycleManager;
-import ninja.onewaysidewalks.fantasyurf.stats.persistence.PersistenceModule;
-import ninja.onewaysidewalks.fantasyurf.stats.supervisor.ProducerModule;
+import ninja.onewaysidewalks.fantasyurf.stats.calculator.persistence.PersistenceModule;
+import ninja.onewaysidewalks.fantasyurf.stats.calculator.supervisor.ProducerModule;
+import ninja.onewaysidewalks.fantasyurf.stats.calculator.worker.resources.ApiModule;
 import ninja.onewaysidewalks.messaging.client.consumers.rabbitmq.guice.CompetingConsumerLifecycleManager;
 import ninja.onewaysidewalks.riotapi.guice.RiotModule;
 import org.joda.time.DateTime;
@@ -28,7 +29,8 @@ public class StatCalculatorWorkerSvc extends Application<StatCalculatorWorkerCon
     @Override
     public void initialize(Bootstrap<StatCalculatorWorkerConfig> bootstrap) {
 
-        GuiceBundle.Builder<StatCalculatorWorkerConfig> builder = GuiceBundle.newBuilder();
+        GuiceBundle.Builder<StatCalculatorWorkerConfig> builder = GuiceBundle.<StatCalculatorWorkerConfig>newBuilder()
+                .enableAutoConfig(getClass().getPackage().getName());
 
         cassandraLifeCycleManager = new LifeCycleManager<>(new Provider<ConfigWithCassandra>() {
             @Override
@@ -41,7 +43,8 @@ public class StatCalculatorWorkerSvc extends Application<StatCalculatorWorkerCon
         builder = builder
                 .addModule(new PersistenceModule())
                 .addModule(new RiotModule())
-                .addModule(new ProducerModule());
+                .addModule(new ProducerModule())
+                .addModule(new ApiModule());
 
         final GuiceBundle<StatCalculatorWorkerConfig> guiceBundle = builder.build();
 

@@ -10,7 +10,7 @@ import ninja.onewaysidewalks.cassandra.client.ConfigWithCassandra;
 import ninja.onewaysidewalks.cassandra.client.LifeCycleManager;
 import ninja.onewaysidewalks.messaging.client.consumers.rabbitmq.guice.CompetingConsumerLifecycleManager;
 import ninja.onewaysidewalks.riotapi.guice.RiotModule;
-import ninja.onewaysidewalks.riotapi.urf.matches.persistence.PersistenceModule;
+import ninja.onewaysidewalks.riotapi.urf.matches.persistence.MatchPersistenceModule;
 
 import javax.inject.Provider;
 
@@ -35,7 +35,7 @@ public class MatchReceiverSvc extends Application<SvcConfig> {
 
         //Add modules for injection configuration
         builder = builder
-                .addModule(new PersistenceModule())
+                .addModule(new MatchPersistenceModule())
                 .addModule(new RiotModule())
                 .addModule(new ApiModule());
 

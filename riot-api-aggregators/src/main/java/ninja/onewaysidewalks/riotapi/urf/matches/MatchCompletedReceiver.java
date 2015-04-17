@@ -2,15 +2,12 @@ package ninja.onewaysidewalks.riotapi.urf.matches;
 
 import lombok.extern.slf4j.Slf4j;
 import ninja.onewaysidewalks.messaging.client.consumers.MessageHandler;
-import ninja.onewaysidewalks.messaging.client.producers.Producer;
 import ninja.onewaysidewalks.riotapi.RiotClient;
 import ninja.onewaysidewalks.riotapi.RiotClientImpl;
 import ninja.onewaysidewalks.riotapi.models.Match;
-import ninja.onewaysidewalks.riotapi.urf.matches.ids.persistence.MatchIdPersistence;
 import ninja.onewaysidewalks.riotapi.urf.matches.persistence.MatchIdTimeBucketPersistence;
 import ninja.onewaysidewalks.riotapi.urf.matches.persistence.MatchPersistence;
-import ninja.onewaysidewalks.riotapi.urf.matches.persistence.TimeBucketInterval;
-import ninja.onewaysidewalks.riotapi.urf.matches.shared.MatchRecordedMessage;
+import ninja.onewaysidewalks.utilities.TimeBucketInterval;
 
 import javax.inject.Inject;
 

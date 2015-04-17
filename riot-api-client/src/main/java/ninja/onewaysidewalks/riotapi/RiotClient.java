@@ -1,5 +1,6 @@
 package ninja.onewaysidewalks.riotapi;
 
+import ninja.onewaysidewalks.riotapi.models.Champion;
 import ninja.onewaysidewalks.riotapi.models.Match;
 
 import java.util.List;
@@ -16,4 +17,6 @@ public interface RiotClient {
     List<Long> getMatchIdsForUrf(long timestamp, RiotClientImpl.Region region);
 
     Match getMatchById(RiotClientImpl.Region region, long matchId);
+
+    List<Champion> getChampions(RiotClientImpl.Region region);
 }

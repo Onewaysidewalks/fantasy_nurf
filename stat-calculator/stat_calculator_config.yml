@@ -16,5 +16,3 @@ messagingProducer:
 
 cassandraConfig:
     contactPoints: ["127.0.0.1"]
-
-matchApiUrl: "http://localhost:8902/matches/"

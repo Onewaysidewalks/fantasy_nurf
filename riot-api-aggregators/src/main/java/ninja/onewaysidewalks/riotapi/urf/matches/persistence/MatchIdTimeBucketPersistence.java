@@ -1,5 +1,6 @@
 package ninja.onewaysidewalks.riotapi.urf.matches.persistence;
 
+import ninja.onewaysidewalks.utilities.TimeBucketInterval;
 import org.joda.time.DateTime;
 
 import java.util.Set;

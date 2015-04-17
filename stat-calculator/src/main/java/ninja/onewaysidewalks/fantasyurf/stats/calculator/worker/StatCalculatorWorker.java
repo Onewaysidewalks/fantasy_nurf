@@ -2,12 +2,12 @@ package ninja.onewaysidewalks.fantasyurf.stats.calculator.worker;
 
 import lombok.extern.slf4j.Slf4j;
 import ninja.onewaysidewalks.fantasyurf.stats.calculator.shared.StatsBuilder;
-import ninja.onewaysidewalks.fantasyurf.stats.calculator.persistence.ChampionStatisticPersistence;
+import ninja.onewaysidewalks.fantasyurf.stats.persistence.ChampionStatisticPersistence;
 import ninja.onewaysidewalks.riotapi.models.Match;
 import ninja.onewaysidewalks.riotapi.urf.matches.persistence.MatchIdTimeBucketPersistence;
 import ninja.onewaysidewalks.riotapi.urf.matches.persistence.MatchPersistence;
-import ninja.onewaysidewalks.riotapi.urf.matches.persistence.TimeBucketInterval;
 import ninja.onewaysidewalks.messaging.client.consumers.MessageHandler;
+import ninja.onewaysidewalks.utilities.TimeBucketInterval;
 import org.joda.time.DateTime;
 
 import javax.inject.Inject;

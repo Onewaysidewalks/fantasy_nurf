@@ -4,6 +4,8 @@ import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.datastax.driver.core.querybuilder.QueryBuilder;
+import ninja.onewaysidewalks.utilities.TimeBucketHelper;
+import ninja.onewaysidewalks.utilities.TimeBucketInterval;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -32,7 +34,7 @@ public class MatchIdTimeBucketPersistenceImpl implements MatchIdTimeBucketPersis
     @Override
     public void saveMatchIdToTimeBucket(Long matchStartedTime, Long matchId, TimeBucketInterval timeBucketInterval) {
 
-        DateTime timeBucket = getTimeBucket(matchStartedTime, timeBucketInterval);
+        DateTime timeBucket = TimeBucketHelper.getTimeBucket(matchStartedTime, timeBucketInterval);
 
         session.execute(QueryBuilder
                 .update(RAW_MATCHES_KEYSPACE, MATCH_HOUR_TIMEBUCKETS_TABLE)
@@ -42,7 +44,7 @@ public class MatchIdTimeBucketPersistenceImpl implements MatchIdTimeBucketPersis
 
     @Override
     public Set<Long> getMatchIdsByTime(DateTime time, TimeBucketInterval timeBucketInterval) {
-        DateTime timeBucket = getTimeBucket(time.getMillis(), timeBucketInterval);
+        DateTime timeBucket = TimeBucketHelper.getTimeBucket(time.getMillis(), timeBucketInterval);
 
         ResultSet resultSet = session.execute(QueryBuilder
                 .select().from(RAW_MATCHES_KEYSPACE, MATCH_HOUR_TIMEBUCKETS_TABLE)
@@ -54,17 +56,5 @@ public class MatchIdTimeBucketPersistenceImpl implements MatchIdTimeBucketPersis
 
         Row row = resultSet.one();
         return row.getSet("match_ids", Long.class);
-    }
-
-    public DateTime getTimeBucket(Long matchTimeMills, TimeBucketInterval timeBucketInterval) {
-        //TODO: handle other time intervals. Not needed for competition
-
-        DateTime matchTime = new DateTime(matchTimeMills, DateTimeZone.UTC);
-
-        if (timeBucketInterval.equals(TimeBucketInterval.HOUR)) {
-            return new DateTime(matchTime.getYear(), matchTime.getMonthOfYear(), matchTime.getDayOfMonth(), matchTime.getHourOfDay(), 0, DateTimeZone.UTC);
-        } else {
-            return matchTime;
-        }
     }
 }

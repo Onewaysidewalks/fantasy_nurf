@@ -8,11 +8,12 @@ import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import ninja.onewaysidewalks.cassandra.client.ConfigWithCassandra;
 import ninja.onewaysidewalks.cassandra.client.LifeCycleManager;
-import ninja.onewaysidewalks.fantasyurf.stats.calculator.persistence.PersistenceModule;
+import ninja.onewaysidewalks.fantasyurf.stats.persistence.StatPersistenceModule;
 import ninja.onewaysidewalks.fantasyurf.stats.calculator.supervisor.ProducerModule;
 import ninja.onewaysidewalks.fantasyurf.stats.calculator.worker.resources.ApiModule;
 import ninja.onewaysidewalks.messaging.client.consumers.rabbitmq.guice.CompetingConsumerLifecycleManager;
 import ninja.onewaysidewalks.riotapi.guice.RiotModule;
+import ninja.onewaysidewalks.riotapi.urf.matches.persistence.MatchPersistenceModule;
 import org.joda.time.DateTime;
 
 import javax.inject.Provider;
@@ -41,7 +42,8 @@ public class StatCalculatorWorkerSvc extends Application<StatCalculatorWorkerCon
 
         //Add modules for injection configuration
         builder = builder
-                .addModule(new PersistenceModule())
+                .addModule(new StatPersistenceModule())
+                .addModule(new MatchPersistenceModule())
                 .addModule(new RiotModule())
                 .addModule(new ProducerModule())
                 .addModule(new ApiModule());

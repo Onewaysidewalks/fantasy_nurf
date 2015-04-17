@@ -33,8 +33,6 @@ public class TimeBucketHelper {
                 buckets.add(currentBucket);
             }
 
-            buckets.add(endBucket);
-
             return buckets;
         } else {
             throw new IllegalArgumentException("Non-Hour timebuckets not supported");

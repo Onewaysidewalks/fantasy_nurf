@@ -23,18 +23,6 @@ public class FantasyMatch {
 }
 
 @Data
-class Team {
-    private String playerId; //for now since there is no security, this must be passed around directly
-
-    private boolean isWinner;
-
-    @MaxSize(2)
-    private List<Integer> bans;
-
-    private TeamPicks picks;
-}
-
-@Data
 class TeamPicks {
     @MaxSize(2)
     private List<ChampionPick> first;

@@ -4,7 +4,8 @@ import lombok.Data;
 
 @Data
 public class FantasyMatchStartRequest {
-    private Team team;
 
-    private String invitee; //for now, since there is no security, this must match the other players id
+    private String playerId; //Since there is no security, this has to be posted at the API directly, instead of coming from the authorization header
+
+    private Team team;
 }

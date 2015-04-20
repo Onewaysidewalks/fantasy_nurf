@@ -9,6 +9,7 @@ import ninja.onewaysidewalks.cassandra.client.ConfigWithCassandra;
 import ninja.onewaysidewalks.cassandra.client.LifeCycleManager;
 import ninja.onewaysidewalks.fantasyurf.api.config.FantasySvcConfig;
 import ninja.onewaysidewalks.fantasyurf.api.guice.ApiModule;
+import ninja.onewaysidewalks.fantasyurf.api.persistence.FantasyPersistenceModule;
 import ninja.onewaysidewalks.fantasyurf.stats.persistence.StatPersistenceModule;
 import ninja.onewaysidewalks.riotapi.guice.RiotModule;
 
@@ -35,6 +36,7 @@ public class FantasySvc extends Application<FantasySvcConfig> {
                 .addModule(new ApiModule())
                 .addModule(new StatPersistenceModule())
                 .addModule(new RiotModule())
+                .addModule(new FantasyPersistenceModule())
                 .setConfigClass(FantasySvcConfig.class);
 
         cassandraLifeCycleManager = new LifeCycleManager<>(new Provider<ConfigWithCassandra>() {
